@@ -1,8 +1,8 @@
-let page
+let page = getUrlParameter("page");
 
 $(document).ready(function(){
 	
-	page = getUrlParameter("page");
+	
 	
 	function Search(query){
 		let searchArr = text.split("function");
