@@ -1,5 +1,3 @@
-let page = getUrlParameter("page");
-
 $(document).ready(function(){
 	
 	
@@ -90,3 +88,4 @@ var getUrlParameter = function getUrlParameter(sParam) {
         }
     }
 };
+let page = getUrlParameter("page");
