@@ -47,7 +47,7 @@ $(document).ready(function(){
 						"title": Title(searchArr[i]),
 						"description": description(searchArr[i]),
 						"function": getFunc(searchArr[i])
-						"param": getFunc(searchArr[i]).slice(0,-2)
+						"param": getFunc(searchArr[i]).substring(0,getFunc(searchArr[i])-2)
 					})
 				}
 			}
