@@ -47,6 +47,7 @@ $(document).ready(function(){
 						"title": Title(searchArr[i]),
 						"description": description(searchArr[i]),
 						"function": getFunc(searchArr[i])
+						"param": getFunc(searchArr[i]).slice(0,-2)
 					})
 				}
 			}
@@ -62,7 +63,7 @@ $(document).ready(function(){
 		for(let i=0;i<positive.length;i++){
 			$("#Description").append(`<div id=\"searchResult${i}\" class=\"result\"><\/div>`);
 			$(`#searchResult${i}`).append(`
-				<a onclick=\"${positive[i].function}\" href=\"#\">${positive[i].title}<\/a><br>
+				<a onclick=\"${positive[i].function}\" href=\"?page=${positive[i].param}\">${positive[i].title}<\/a><br>
 				<div class="searchDes">${positive[i].description}</div>
 			`)
 		}
