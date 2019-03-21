@@ -74,7 +74,7 @@ $(document).ready(function(){
 	});
 });
 
-var getUrlParameter = function getUrlParameter(sParam) {
+function getUrlParameter(sParam) {
     var sPageURL = window.location.search.substring(1),
         sURLVariables = sPageURL.split('&'),
         sParameterName,
