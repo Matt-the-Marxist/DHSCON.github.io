@@ -1,92 +1,105 @@
+let clubs
+let page
+
 $(document).ready(function(){
+	
+	$.get("	https://api.myjson.com/bins/xqszu", function(data, textStatus, jqXHR) {
+		clubs = data;
+		page = getUrlParameter("page");
+		start(clubs.pages[clubs.pages.findIndex(findClub)]);
+	});
 	
 	
 	
 	function Search(query){
-		let searchArr = text.split("function");
-		console.log(searchArr);
-		searchArr.shift();
-		let positive = []
-		for(let i=searchArr.length-1;i>0;i--){
-			let words = query.split(" ")
-			for(let j=0;j<words.length;j++){
-				let regex = new RegExp(words[j],"i")
-				//negative
-				if(searchArr[i].search(regex)==-1){
-				//positive	
-				}else{
-					function Title(str){
-						let getTitle = str;
-						getTitle=getTitle.substring(getTitle.search("Title")+9);
-						getTitle = getTitle.substring(0,getTitle.search("\""));
-						return getTitle;
-					}
-					function description(str){
-						let getDes = str;
-						getDes=getDes.substring(getDes.search("Description")+15);
-						getDes = getDes.substring(0, getDes.search("\`"));
-						//strip html tags
-						function strip_html_tags(str){
-						   if ((str===null) || (str===''))
-							   return false;
-						  else
-						   str = str.toString();
-						  return str.replace(/<[^>]*>/g, '');
+		
+		query = query.split(" ");
+		
+		for(let i=0;i<query.length;i++){
+			query[i]= new RegExp(query[i],"i")
+		}
+		
+		let result=[]
+		
+		for(let i=0;i<clubs.pages.length; i++){
+			let present=false;
+			club = clubs.pages[i];
+			for(let j=0; j<query.length; j++){
+				
+				if(checkPage(club, query[j])){
+					for(let k=0; k<result.length;k++){
+						if(club==result[k]){
+							present=true;
 						}
-						getDes = strip_html_tags(getDes)
-						return getDes;
 					}
-					function getFunc(str){
-						let clubFunction = str;
-						clubFunction=clubFunction.trim();
-						clubFunction = clubFunction.substring(0, clubFunction.search(/\s/));
-						return clubFunction;
+					if(!present){
+						result.push(club);
 					}
-
-					positive.push({
-						"title": Title(searchArr[i]),
-						"description": description(searchArr[i]),
-						"function": getFunc(searchArr[i])
-						"param": getFunc(searchArr[i]).substring(0,getFunc(searchArr[i])-2)
-					})
 				}
 			}
 		}
-		searchArr.shift();
-		console.log(positive)
+		
+		console.log(result);
 		
 		$("#ClubName").text("Search Results:")
 		$("#Description").text("")
-		if(positive==0){
-			$("#Description").append("No Results Found")
+		
+		if(result==0){
+			$("#Description").text("No Results Found")
 		}
-		for(let i=0;i<positive.length;i++){
-			$("#Description").append(`<div id=\"searchResult${i}\" class=\"result\"><\/div>`);
-			$(`#searchResult${i}`).append(`
-				<a onclick=\"${positive[i].function}\" href=\"?page=${positive[i].param}\">${positive[i].title}<\/a><br>
-				<div class="searchDes">${positive[i].description}</div>
-			`)
+		
+		for(let i=0;i<result.length;i++){
+			$("#Description").append(`<div id=\"searchResult${i}\" class=\"result\"></div>`);
+			$(`#searchResult${i}`).append(`<a href=\"\./?page=${result[i].name}\">${result[i].title}</a>`);
+			$(`#searchResult${i}`).append(`<div class=\"searchDes\">${strip_html_tags(result[i].description)}</div>`);
+			
+
 		}
+		
 	}
 
 	$("#submit").click(function(){
 		let search = $("#search").val();
 		Search(search);
 	});
+	
+	function getUrlParameter(sParam) {
+		var sPageURL = window.location.search.substring(1),
+			sURLVariables = sPageURL.split('&'),
+			sParameterName,
+			i;
+
+		for (i = 0; i < sURLVariables.length; i++) {
+			sParameterName = sURLVariables[i].split('=');
+
+			if (sParameterName[0] === sParam) {
+				return sParameterName[1] === undefined ? true : decodeURIComponent(sParameterName[1]);
+			}
+		}
+	};
+
+	
+	
 });
 
-function getUrlParameter(sParam) {
-    var sPageURL = window.location.search.substring(1),
-        sURLVariables = sPageURL.split('&'),
-        sParameterName,
-        i;
+function strip_html_tags(str){
+	if ((str===null) || (str==='')){
+		return false;	
+	}else{
+		str = str.toString();
+		return str.replace(/<[^>]*>/g, '');
+	}
+}
 
-    for (i = 0; i < sURLVariables.length; i++) {
-        sParameterName = sURLVariables[i].split('=');
+function checkPage(obj, str){
+	return(obj.title.search(str)!=-1 || obj.description.search(str)!=-1 || obj.tags.includes(str));
+}
 
-        if (sParameterName[0] === sParam) {
-            return sParameterName[1] === undefined ? true : decodeURIComponent(sParameterName[1]);
-        }
-    }
-};
-let page = getUrlParameter("page");
+function findClub(club){
+	return club.name==page;
+}
+function start(club){
+	$("#ClubName").text(club.title)
+	$("#Description").text("")
+	$("#Description").append(club.description)	
+}
